@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Film;
+use App\Models\Category;
+use App\Models\Post;
+use App\Models\Vote;
 use Illuminate\Http\Request;
 
-class FilmsController extends Controller
+class PostsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +16,14 @@ class FilmsController extends Controller
      */
     public function index()
     {
-        $films = Film::all();
-        return view("films.index", ["films" => $films]);
+        $category = Category::all();
+        $posts = Post::where("id", "<>", "-1");
+        if (request()->category) {
+            $posts = $posts->where("category_id", request()->category);
+        }
+        $Posts = $posts->get();
+
+        return view("Posts.index", ["Posts" => $Posts, "categories" => $category]);
     }
 
     /**
@@ -25,7 +33,9 @@ class FilmsController extends Controller
      */
     public function create()
     {
-        return view("films.create");
+        $categories=Category::all();
+
+        return view("Posts.create", ["categories" => $categories]);
     }
 
     /**
@@ -40,7 +50,8 @@ class FilmsController extends Controller
         $this->validate($request, [
             "title" => "required",
             "desc" => "required",
-            "image" => "required"
+            "image" => "required",
+            "category_id" => "required",
         ]);
 
         $file = $request->image;
@@ -49,10 +60,11 @@ class FilmsController extends Controller
         $file->move('storage/images/', $filename);
         $img = "storage/images/" . $filename;
 
-        Film::create([
+        Post::create([
             "title" => $request->title,
             "description" => $request->desc,
-            "image" => $img
+            "image" => $img,
+            "category_id" => $request->category_id
         ]);
         return back();
     }
@@ -66,8 +78,9 @@ class FilmsController extends Controller
     public function show($id)
     {
 
-        
-        return view("films.show",["film"=>Film::find($id)]);
+
+        return view("Posts.show", ["Post" => Post::find($id),
+        "hasVoted" =>auth()->user() ? Vote::where("user_id", auth()->user()->id)->where("post_id", $id)->count() > 0 : false]);
     }
 
     /**
@@ -78,7 +91,9 @@ class FilmsController extends Controller
      */
     public function edit($id)
     {
-        return view("films.edit", ["film" => Film::find($id)]);
+        $categories=Category::all();
+        return view("Posts.edit", ["Post" => Post::find($id),
+    "categories"=>$categories]);
     }
 
     /**
@@ -91,20 +106,20 @@ class FilmsController extends Controller
     public function update(Request $request, $id)
     {
 
-        $data=$request->only(["title","description"]);
-        $film = Film::find($id);
+        $data = $request->only(["title", "description","category_id"]);
+        $Post = Post::find($id);
         if ($request->hasFile("image")) {
             $file = $request->image;
             $ext = $file->getClientOriginalExtension();
             $filename = time() . "." . $ext;
             $file->move('storage/images/', $filename);
             $img = "storage/images/" . $filename;
-            unlink($film->image);
-            $data["image"]=$img;
+            unlink($Post->image);
+            $data["image"] = $img;
         }
 
 
-        $film->update($data);
+        $Post->update($data);
         return back();
     }
 
@@ -116,8 +131,24 @@ class FilmsController extends Controller
      */
     public function destroy(Request $req)
     {
-        $film=Film::find($req->id);
-        $film->delete();
+        $Post = Post::find($req->id);
+        $Post->delete();
         return back();
     }
+    // vote
+    public function vote(Request $req,$id)
+    {
+        // $Post = Post::find($req->id);
+        $vote=Vote::where("post_id",$id)->where("user_id",auth()->user()->id)->first();
+        if($vote){
+            $vote->delete();
+        }else{
+            Vote::create([
+                "post_id"=>$id,
+                "user_id"=>auth()->user()->id
+            ]);
+        }
+        return back();
+    }
+
 }

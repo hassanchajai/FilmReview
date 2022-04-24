@@ -11,7 +11,7 @@ class CommentsController extends Controller
     public function store(Request $request){
         Comment::create([
             "comment"=>$request->comment,
-            "film_id"=>$request->film_id,
+            "post_id"=>$request->Post_id,
             "user_id"=>$request->user_id
         ]);
         return back();

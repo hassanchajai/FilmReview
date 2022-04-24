@@ -6,17 +6,42 @@
 
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-6">
-                <img src="{{ asset($film->image) }}" style="height: auto" width="470px" />
+                <img src="{{ asset($Post->image) }}" style="height: auto" width="470px" />
             </div>
 
             <div class="col-lg-6 col-md-6 col-sm-6  ">
 
-                <h1 class="">{{ $film->title }}</h1>
+                <h1 class="">{{ $Post->title }}</h1>
                 <ul class="list-inline">
-                    <li>Date | {{ $film->created_at }}</li>
+                    <li>Date | {{ $Post->created_at }}</li>
                 </ul>
-                <p class="lead">{{ $film->description }}</p>
+                <p class="lead">{{ $Post->description }}</p>
+                @auth
+                    
+                <div class="row">
+                    <div class="col-sm-3 col-md-3 col-lg-3">
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                
+                                @if ($hasVoted)
+                                    
+                                <a type="button" id="decreaseButton" href="{{route('Posts@vote',$Post->id)}}" class="btn btn-danger">
+                                <i class="fas fa-chevron-down"></i>
+                                </a>
+                                @else
+                                <a type="button" id="increaseButton" href="{{route('Posts@vote',$Post->id)}}" class="btn btn-success">
+                                <i class="fas fa-chevron-up"></i>
+                                </a>
 
+                                @endif
+
+                            </span>
+                            <input type="text" class="form-control" disabled id="vote" placeholder="Vote" value="{{count($Post->votes)}}" /> 
+                           
+                        </div>
+                    </div>
+            </div>
+                @endauth
             </div>
 
             {{-- <div class="col-lg-3  col-md-3 col-sm-12">
@@ -64,9 +89,8 @@
                     <form action="{{ route('comments@store') }}" method="POST">
                         @csrf
                         Leave a response
-                        <textarea cols="30" rows="4" name="comment" class="form-control">
-                        </textarea>
-                        <input type="hidden" name="film_id" value="{{ $film->id }}">
+                        <textarea cols="30" rows="4" name="comment" class="form-control"></textarea>
+                        <input type="hidden" name="Post_id" value="{{ $Post->id }}">
                         <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
                         <button class="btn btn-primary mt-3">Submit</button>
                     </form>
@@ -76,7 +100,7 @@
                     <div class="col-md-12">
                         <h3 class=" my-5">comment section :</h3>
                         <div class="row">
-                            @foreach ($film->comments as $item)
+                            @foreach ($Post->comments as $item)
                                 <div class="col-md-12 ">
                                     <div class="media"> <img class="mr-3 rounded-circle" alt="Bootstrap Media Preview"
                                             height="70" width="70"

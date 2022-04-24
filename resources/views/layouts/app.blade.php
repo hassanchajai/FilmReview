@@ -54,7 +54,10 @@
                         @else
                         @if (Auth::user()->role === "admin")
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('films@create') }}">Add Film</a>
+                            <a class="nav-link" href="{{ route('Posts@create') }}">Add Post</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('categories@index') }}">Manage Categories</a>
                         </li>
                         @endif
                             <li class="nav-item dropdown">
@@ -63,6 +66,10 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('profile.index') }}"
+                                      >
+                                        {{ __('Profile') }}
+                                    </a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -85,4 +92,7 @@
         </main>
     </div>
 </body>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+crossorigin="anonymous" referrerpolicy="no-referrer" />
 </html>

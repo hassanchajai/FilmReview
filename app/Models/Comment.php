@@ -9,9 +9,12 @@ class Comment extends Model
 {
     use HasFactory;
     protected $fillable=[
-        "film_id","user_id","comment"
+        "post_id","user_id","comment"
     ];
     public function user(){
         return $this->belongsTo(User::class);
+    }
+    public function post(){
+        return $this->belongsTo(Post::class);
     }
 }

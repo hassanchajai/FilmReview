@@ -5,14 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Film extends Model
+class Vote extends Model
 {
     use HasFactory;
     protected $fillable=[
-        "title","description","image"
+        "user_id","post_id"
     ];
-    public function comments(){
-        return $this->hasMany(Comment::class);
-    }
-   
 }
