@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
     <div class="container">
 
         <div class="row">
@@ -17,30 +16,31 @@
                 </ul>
                 <p class="lead">{{ $Post->description }}</p>
                 @auth
-                    
-                <div class="row">
-                    <div class="col-sm-3 col-md-3 col-lg-3">
-                        <div class="input-group">
-                            <span class="input-group-btn">
-                                
-                                @if ($hasVoted)
-                                    
-                                <a type="button" id="decreaseButton" href="{{route('Posts@vote',$Post->id)}}" class="btn btn-danger">
-                                <i class="fas fa-chevron-down"></i>
-                                </a>
-                                @else
-                                <a type="button" id="increaseButton" href="{{route('Posts@vote',$Post->id)}}" class="btn btn-success">
-                                <i class="fas fa-chevron-up"></i>
-                                </a>
 
-                                @endif
+                    <div class="row">
+                        <div class="col-sm-3 col-md-3 col-lg-3">
+                            <div class="input-group">
+                                <span class="input-group-btn">
 
-                            </span>
-                            <input type="text" class="form-control" disabled id="vote" placeholder="Vote" value="{{count($Post->votes)}}" /> 
-                           
+                                    @if ($hasVoted)
+                                        <a type="button" id="decreaseButton" href="{{ route('Posts@vote', $Post->id) }}"
+                                            class="btn btn-danger">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </a>
+                                    @else
+                                        <a type="button" id="increaseButton" href="{{ route('Posts@vote', $Post->id) }}"
+                                            class="btn btn-success">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </a>
+                                    @endif
+
+                                </span>
+                                <input type="text" class="form-control" disabled id="vote" placeholder="Vote"
+                                    value="{{ count($Post->votes) }}" />
+
+                            </div>
                         </div>
                     </div>
-            </div>
                 @endauth
             </div>
 
@@ -62,7 +62,7 @@
                         <li><span class="glyphicon glyphicon-heart" aria-hidden="true"></span></li>
                         <li><span class="glyphicon glyphicon-heart" aria-hidden="true"></span></li>
                         <li><span class="glyphicon glyphicon-heart" aria-hidden="true"></span></li>
-                        
+
                     </ul>
                 </div>
                 <div class="well">
@@ -102,14 +102,18 @@
                         <div class="row">
                             @foreach ($Post->comments as $item)
                                 <div class="col-md-12 ">
-                                    <div class="media"> <img class="mr-3 rounded-circle" alt="Bootstrap Media Preview"
-                                            height="70" width="70"
+                                    <div class="media"> <img class="mr-3 rounded-circle"
+                                            alt="Bootstrap Media Preview" height="70" width="70"
                                             src="https://www.logolynx.com/images/logolynx/5c/5c5fbe66daa900ad13c9a0046596c465.png" />
                                         <div class="media-body">
                                             <div class="row">
                                                 <div class="col-8 d-flex">
                                                     <h5>{{ $item->user->name }} - </h5> <span>
-                                                        {{ $item->created_at }}</span>
+                                                        {{ $item->created_at }}</span> -
+                                                    @if (Auth::user()->role == 'admin' || Auth::user()->id == $item->user_id)
+                                                        <a
+                                                            href="{{ route('comments@destroy', $item->id) }}">supprimer</a>
+                                                    @endif
                                                 </div>
 
                                             </div>{{ $item->comment }}
@@ -118,7 +122,6 @@
                                     </div>
                                     <hr>
                                 </div>
-                                
                             @endforeach
 
 
@@ -129,5 +132,4 @@
         </div>
     </div>
     </div> <!-- /container -->
-
 @endsection

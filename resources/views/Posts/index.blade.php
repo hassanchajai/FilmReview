@@ -6,11 +6,12 @@
         <div class="row">
             <div class="col-md-3">
                 <div class="list-group">
-                    <a href="{{route('Posts@index')}}" class="list-group-item list-group-item-action">
+                    <a href="{{ route('Posts@index') }}" class="list-group-item list-group-item-action">
                         All
                     </a>
                     @foreach ($categories as $item)
-                        <a href="{{route('Posts@index').'?category='.$item->id}}" class="list-group-item list-group-item-action">
+                        <a href="{{ route('Posts@index') . '?category=' . $item->id }}"
+                            class="list-group-item list-group-item-action">
                             {{ $item->name }}
                         </a>
                     @endforeach
@@ -36,16 +37,19 @@
                                             <a href="{{ route('Posts@show', $Post->id) }}"
                                                 class="btn btn-primary d-block">Read More</a>
                                             @auth
-                                                @if (Auth::user()->role === 'admin')
+
+                                                @if (Auth::user()->role === 'admin' || auth()->user()->id == $Post->user_id)
                                                     <a href="{{ route('Posts@edit', $Post->id) }}"
                                                         class="btn btn-warning mb-1   ">Edit</a>
                                                     <form action="{{ route('Posts@destroy') }}" method="POST">
                                                         @csrf
-                                                        @method("DELETE")
+                                                        @method('DELETE')
                                                         <button class="btn btn-danger" type="submit">Delete</button>
                                                         <input type="hidden" name="id" value="{{ $Post->id }}" />
                                                     </form>
                                                 @endif
+
+
                                             @endauth
                                         </div>
                                     </div>
@@ -60,7 +64,7 @@
                                     <div class="card-body text-black">
                                         <h5 class="card-title">{{ $Post->title }}</h5>
                                         <p class="card-text">{{ $Post->description }}</p>
-                                       
+
 
                                     </div>
                                 </div>

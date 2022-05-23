@@ -21,6 +21,9 @@ class PostsController extends Controller
         if (request()->category) {
             $posts = $posts->where("category_id", request()->category);
         }
+        if (request()->user_id) {
+            $posts = $posts->where("user_id",  request()->user_id);
+        }
         $Posts = $posts->get();
 
         return view("Posts.index", ["Posts" => $Posts, "categories" => $category]);
@@ -33,7 +36,7 @@ class PostsController extends Controller
      */
     public function create()
     {
-        $categories=Category::all();
+        $categories = Category::all();
 
         return view("Posts.create", ["categories" => $categories]);
     }
@@ -64,7 +67,8 @@ class PostsController extends Controller
             "title" => $request->title,
             "description" => $request->desc,
             "image" => $img,
-            "category_id" => $request->category_id
+            "category_id" => $request->category_id,
+            "user_id" => auth()->user()->id,
         ]);
         return back();
     }
@@ -79,8 +83,10 @@ class PostsController extends Controller
     {
 
 
-        return view("Posts.show", ["Post" => Post::find($id),
-        "hasVoted" =>auth()->user() ? Vote::where("user_id", auth()->user()->id)->where("post_id", $id)->count() > 0 : false]);
+        return view("Posts.show", [
+            "Post" => Post::find($id),
+            "hasVoted" => auth()->user() ? Vote::where("user_id", auth()->user()->id)->where("post_id", $id)->count() > 0 : false
+        ]);
     }
 
     /**
@@ -91,9 +97,11 @@ class PostsController extends Controller
      */
     public function edit($id)
     {
-        $categories=Category::all();
-        return view("Posts.edit", ["Post" => Post::find($id),
-    "categories"=>$categories]);
+        $categories = Category::all();
+        return view("Posts.edit", [
+            "Post" => Post::find($id),
+            "categories" => $categories
+        ]);
     }
 
     /**
@@ -106,7 +114,7 @@ class PostsController extends Controller
     public function update(Request $request, $id)
     {
 
-        $data = $request->only(["title", "description","category_id"]);
+        $data = $request->only(["title", "description", "category_id"]);
         $Post = Post::find($id);
         if ($request->hasFile("image")) {
             $file = $request->image;
@@ -136,19 +144,18 @@ class PostsController extends Controller
         return back();
     }
     // vote
-    public function vote(Request $req,$id)
+    public function vote(Request $req, $id)
     {
         // $Post = Post::find($req->id);
-        $vote=Vote::where("post_id",$id)->where("user_id",auth()->user()->id)->first();
-        if($vote){
+        $vote = Vote::where("post_id", $id)->where("user_id", auth()->user()->id)->first();
+        if ($vote) {
             $vote->delete();
-        }else{
+        } else {
             Vote::create([
-                "post_id"=>$id,
-                "user_id"=>auth()->user()->id
+                "post_id" => $id,
+                "user_id" => auth()->user()->id
             ]);
         }
         return back();
     }
-
 }
